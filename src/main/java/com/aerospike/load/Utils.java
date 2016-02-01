@@ -117,6 +117,7 @@ public class Utils {
 		WritePolicy writePolicy = new WritePolicy();
 		writePolicy.recordExistsAction = RecordExistsAction.valueOf(writeAction.toUpperCase());
 		writePolicy.timeout = to;
+		writePolicy.sendKey = true;
 
 		char delimiter = ',';
 		boolean ignoreFirstLine = true;
