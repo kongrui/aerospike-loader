@@ -26,6 +26,8 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.log4j.Logger;
@@ -141,5 +143,14 @@ public class Utils {
 			}
 		}		
 		return sourceTZ;
-	}	
+	}
+
+	public static final boolean isDouble(String itemPrice)
+	{
+		Pattern pattern = Pattern.compile("^[-+]?\\d+\\.(\\d+?)?$");
+		Matcher matcher = pattern.matcher(itemPrice);
+		boolean result=matcher.matches();
+		return result;
+	}
+
 }

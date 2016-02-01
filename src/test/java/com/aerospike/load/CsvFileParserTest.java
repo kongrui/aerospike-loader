@@ -46,7 +46,7 @@ enum BinType {
  */
 public class CsvFileParserTest {
 	
-	String host = "127.0.0.1";
+	String host = "192.168.99.100";
 	String port = "3000";
 	String ns = "test";
 	String set = null;

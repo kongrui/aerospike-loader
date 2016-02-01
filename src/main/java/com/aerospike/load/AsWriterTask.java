@@ -420,20 +420,28 @@ public class AsWriterTask implements Callable<Integer> {
 		String[] listValues = values.split(Constants.LIST_DELEMITER, -1);
 
 		for (String valueString : listValues) {
+			String v = valueString.trim();
 			/* 
 			 * guess the type
 			 */
-			try {
-				Double val = Double.parseDouble(valueString.trim());
-				list.add(val);
-			} catch (NumberFormatException e){
+			if (Utils.isDouble(v)) {
 				try {
-					Long val = Long.parseLong(valueString.trim());
+					Double val = Double.parseDouble(v);
 					list.add(val);
-				} catch (NumberFormatException ee){
-					list.add(valueString.trim());
+					continue;
+				} catch (NumberFormatException e) {
+					// fall back
+				}
+			} else {
+				try {
+					Long val = Long.parseLong(v);
+					list.add(val);
+					continue;
+				} catch (NumberFormatException ee) {
+					// fall back
 				}
 			}
+			list.add(v);
 		}
 		return list;
 	}
