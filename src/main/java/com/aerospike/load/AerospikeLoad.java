@@ -91,8 +91,9 @@ public class AerospikeLoad implements Runnable {
 	private static Logger	log = Logger.getLogger(AerospikeLoad.class);
 	
 	public static void main(String[] args) throws IOException{
-		
-		Value.UseDoubleType = true;
+
+		// Comment this out so to assume the default value
+		//Value.UseDoubleType = true;
 
 		Thread statPrinter = new Thread(new PrintStat(counters));
 		try {
