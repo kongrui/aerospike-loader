@@ -7,4 +7,7 @@ pushd `dirname $0` > /dev/null
 SCRIPTPATH=`pwd -P`
 popd > /dev/null
 
-java -cp $SCRIPTPATH/target/aerospike-load-*-jar-with-dependencies.jar com.aerospike.load.AerospikeLoad $*
+JAVA_OPTS=
+JAVA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
+
+java $JAVA_OPTS -cp $SCRIPTPATH/target/aerospike-load-*-jar-with-dependencies.jar com.aerospike.load.AerospikeLoad $*
