@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.regex.Pattern;
 
 import com.aerospike.client.Value;
 import org.apache.log4j.Level;
@@ -313,7 +314,7 @@ public class AsWriterTask implements Callable<Integer> {
 									map.put(kv[0].trim(), kv[1].trim());
 							}
 							log.debug(map.toString());
-							bin = Bin.asMap(binColumn.getBinNameHeader(), map);
+							bin = binAsMap(binColumn.getBinNameHeader(), map);
 						} else {
 							bin = null;
 							log.error("Error: Cannot parse to a map: "
@@ -329,11 +330,11 @@ public class AsWriterTask implements Callable<Integer> {
 							Object obj = jsonParser.parse(binRawText);
 							if (obj instanceof JSONArray) {
 								JSONArray jsonArray = (JSONArray) obj;
-								bin = Bin.asList(binColumn.getBinNameHeader(),
+								bin = binAsList(binColumn.getBinNameHeader(),
 										jsonArray);
 							} else {
 								JSONObject jsonObj = (JSONObject) obj;
-								bin = Bin.asMap(binColumn.getBinNameHeader(),
+								bin = binAsMap(binColumn.getBinNameHeader(),
 										jsonObj);
 							}
 						} catch (ParseException e) {
@@ -424,7 +425,7 @@ public class AsWriterTask implements Callable<Integer> {
 			String v = valueString.trim();
 			if (v.contains(Constants.LIST_SUB_DELEMITER)) {
                 // it is sublist
-                String[] vlist = v.split(Constants.LIST_SUB_DELEMITER, -1);
+                String[] vlist = v.split(Pattern.quote(Constants.LIST_SUB_DELEMITER), -1);
                 List<Object> packlist = new ArrayList<Object>();
                 for (String vString : vlist) {
                     packlist.add(createValue(vString));
@@ -441,14 +442,16 @@ public class AsWriterTask implements Callable<Integer> {
         if (Utils.isDouble(v)) {
             try {
                 Double val = Double.parseDouble(v);
-                return Value.get(val);
+                return Value.get(val.doubleValue());
             } catch (NumberFormatException e) {
+                e.printStackTrace();
             }
         } else {
             try {
                 Long val = Long.parseLong(v);
-                return Value.get(val);
+                return Value.get(val.longValue());
             } catch (NumberFormatException ee) {
+                ee.printStackTrace();
                 // fall back
             }
         }
@@ -493,4 +496,13 @@ public class AsWriterTask implements Callable<Integer> {
 			return 0;
 		}
 	}
+
+    public static Bin binAsMap(String name, Map<?,?> value) {
+        return new Bin(name, Value.get(value));
+    }
+
+    public static Bin binAsList(String name, List<?> value)
+    {
+        return new Bin(name, Value.get(value));
+    }
 }
