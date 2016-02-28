@@ -40,6 +40,7 @@ public class Constants {
 	public static final char COMMA_DELEMITER		= ',';
 	public static final char DOUBLE_QOUTE_DELEMITER	= '"';
 	public static final String LIST_DELEMITER		= "::";
+	public static final String LIST_SUB_DELEMITER	= "|";
 	public static final String MAP_DELEMITER		= "::";
 	public static final String MAPKEY_DELEMITER		= "=";
 	//config keywords

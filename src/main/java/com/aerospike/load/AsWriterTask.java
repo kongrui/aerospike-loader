@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import com.aerospike.client.Value;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -421,30 +422,38 @@ public class AsWriterTask implements Callable<Integer> {
 
 		for (String valueString : listValues) {
 			String v = valueString.trim();
-			/* 
-			 * guess the type
-			 */
-			if (Utils.isDouble(v)) {
-				try {
-					Double val = Double.parseDouble(v);
-					list.add(val);
-					continue;
-				} catch (NumberFormatException e) {
-					// fall back
-				}
-			} else {
-				try {
-					Long val = Long.parseLong(v);
-					list.add(val);
-					continue;
-				} catch (NumberFormatException ee) {
-					// fall back
-				}
-			}
-			list.add(v);
+			if (v.contains(Constants.LIST_SUB_DELEMITER)) {
+                // it is sublist
+                String[] vlist = v.split(Constants.LIST_SUB_DELEMITER, -1);
+                List<Object> packlist = new ArrayList<Object>();
+                for (String vString : vlist) {
+                    packlist.add(createValue(vString));
+                }
+                list.add(Value.get(packlist));
+            } else {
+                list.add(createValue(v));
+            }
 		}
 		return list;
 	}
+
+    private Value createValue(String v) {
+        if (Utils.isDouble(v)) {
+            try {
+                Double val = Double.parseDouble(v);
+                return Value.get(val);
+            } catch (NumberFormatException e) {
+            }
+        } else {
+            try {
+                Long val = Long.parseLong(v);
+                return Value.get(val);
+            } catch (NumberFormatException ee) {
+                // fall back
+            }
+        }
+        return Value.get(v);
+    }
 
 	public byte[] toByteArray(String s) {
 
